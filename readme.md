@@ -72,7 +72,7 @@ Sounds can be .wav or .mp3 files.
 If you want to upload a new sound theme, the name of the folder, under which all the config.json and sound files are located, will be the theme name.
 * themename/
   * config.json  (which point to the sound files)
-  * <each of the sound files>
+  * (each of the sound files)
 
 So in the ChimeTheme.zip example above, "ChimeTheme" is the new sound theme name, and it was created by zipping up a folder called ChimeTheme/ which had the config.json and sound files in it.
 
