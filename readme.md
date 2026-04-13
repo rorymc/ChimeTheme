@@ -39,8 +39,7 @@ This will create a zip file in the same directory you're in.
 
 Now we push that to the Met with a quick curl command. This will upload the package we just made.
 ```bash
-curl -X POST http://your-machine-api/api/v1/sounds/theme/upload \
--F "file=@ChimeTheme.zip"
+curl -X POST http://your-machine-api/api/v1/sounds/theme/upload -F "file=@ChimeTheme.zip"
 ```
 You should get back a response that says: `Zip file uploaded and unpacked successfully.`
 
@@ -58,3 +57,53 @@ All sounds came from [Pixabay](https://pixabay.com/sound-effects/search/notifica
 - [New Notification 051 from Universfield](https://pixabay.com/sound-effects/technology-new-notification-051-494246/)
 - [New Notification 036 from Universfield](https://pixabay.com/sound-effects/technology-new-notification-036-485897/)
 
+# Appendix
+
+## How it works
+
+The machine starts with one sound theme called `default`, which is located in `/opt/meticulous-backend/sounds/default/` on disk.
+
+If another custom sound theme is uploaded and selected as active, the Met will layer the active custom theme sound hooks, on top of the default theme.
+
+Sounds can be .wav or .mp3 files.
+
+## Details of uploading
+
+If you want to upload a new sound theme, the name of the folder, under which all the config.json and sound files are located, will be the theme name.
+* themename/
+  * config.json  (which point to the sound files)
+  * <each of the sound files>
+
+So in the ChimeTheme.zip example above, "ChimeTheme" is the new sound theme name, and it was created by zipping up a folder called ChimeTheme/ which had the config.json and sound files in it.
+
+## Calling the APIs
+
+After you upload the ChimeTheme.zip file but before you call the "set" API:
+* the meticulous will unpack the files into `/meticulous-user/sounds/ChimeTheme/...` -- before you upload your first custom theme, the `sounds` folder in that path will not exist.
+* you can call http://your-machine-ip-or-name/api/v1/sounds/theme/get , and it will return back `default`
+
+After you call the "set" API:
+* this reloads the sound theme, and the "get" API will return back "ChimeTheme"
+
+The writers of this guide are unsure what else the APIs do when uploading a sound theme, in terms of processing the sound theme and caching an internal config.  Hence, unless you can confirm via a code crawl that a direct scp is similar to the POST upload, it may be advisable to stick to the API for uploading instead of direct scp.
+
+## Additional Details for Sound Hooks
+
+The way themes work, they overlay on top of the 'default' theme.  You can check the config.json to see what is configured, and http://your-machine-ip-or-name/api/v1/sounds/list to understand the full list of hooks which can be configured for sounds.  At the writing of this document, these are the hooks:
+* startup
+* heating\_start
+* heating\_end
+* brewing\_start
+* brewing\_end
+* abort
+* idle
+* notification
+
+If you want to test playing a specific sound hook for the active sound theme, you can call it like this:
+* http://your-machine-ip-or-name/api/v1/sounds/play/heating_end
+
+## Sound Level
+
+Finally, if you want to adjust the level of the sounds down, it is currently set to 70% manually in /opt/meticulous-backend/sounds.py -- you can edit that manually and set it to a lower number, if you so desire.
+
+By default, nano is installed as an editor.  You can also `apt install vim`, but it will take up about 41 MB.
