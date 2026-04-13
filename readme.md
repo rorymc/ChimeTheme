@@ -39,8 +39,7 @@ This will create a zip file in the same directory you're in.
 
 Now we push that to the Met with a quick curl command. This will upload the package we just made.
 ```bash
-curl -X POST http://your-machine-api/api/v1/sounds/theme/upload \
--F "file=@ChimeTheme.zip"
+curl -X POST http://your-machine-api/api/v1/sounds/theme/upload -F "file=@ChimeTheme.zip"
 ```
 You should get back a response that says: `Zip file uploaded and unpacked successfully.`
 
